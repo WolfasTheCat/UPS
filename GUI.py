@@ -13,7 +13,7 @@ class GameVisualisation(tk.Frame): #TODO game visualisation
     count = 1
 
     def insert_symbol(self,button,symbol):
-        button["text"] == symbol
+        button["text"] = symbol
 
     
     def set_state(self,button):
