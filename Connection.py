@@ -40,11 +40,11 @@ class ConnectionManager():
             self.SOCKET = s
             s.connect((D_HOST,D_PORT))
             
-            
-        finally:
+        except:
             self.CONNECTED = False
             print("Couldn't connect")
-            tkinter.messagebox.showerror(title=None, message=None, **OPTIONAL)
+            tkinter.messagebox.showerror(title=None, message="Problem with connection")
+            return
         
         self.CONNECTED = True
         self.INET_ADDRESS = self.SOCKET.getpeername()
@@ -55,3 +55,4 @@ class ConnectionManager():
         else:
             print("Sending message: " + message)
             self.SOCKET.sendall(message)
+        pass
