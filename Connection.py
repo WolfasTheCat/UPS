@@ -1,7 +1,6 @@
 from argparse import OPTIONAL
 from mailbox import Message
 import socket
-import socketserver
 import sys
 import tkinter
 
