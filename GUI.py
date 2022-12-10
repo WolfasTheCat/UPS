@@ -4,9 +4,6 @@ from tkinter import *
 #Dynamic - add self as parameter
 #Static - Name of class
 
-
-
-
 #Creates game enviroment
 class GameVisualisation(tk.Frame): #TODO game visualisation
     turn = True
@@ -23,10 +20,8 @@ class GameVisualisation(tk.Frame): #TODO game visualisation
             else:
                 self.insert_symbol(button, "O")
             self.count += 1
-            self.turn = False
+            self.turn = True
             
-            
-    
     
     def __init__(self):
         self.game = Tk()
