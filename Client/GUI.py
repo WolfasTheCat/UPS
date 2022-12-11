@@ -19,7 +19,7 @@ class GameVisualisation(tk.Frame): #TODO game visualisation
                 self.insert_symbol(button, "X")
             else:
                 self.insert_symbol(button, "O")
-            self.count += 1
+            self.count += 1 #TODO predelat
             self.turn = True
             
     
