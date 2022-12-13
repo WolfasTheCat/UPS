@@ -16,8 +16,8 @@ class ConnectionManager():
     D_PORT = None
     
     
-    
-    def __init__(self) -> None: #Co to jako je?
+    #Builder for Connection Manager
+    def __init__(self) -> None: #Co to jako je? - Návratová hodnota
         
         
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -25,13 +25,18 @@ class ConnectionManager():
             match option:
                 case 4:
                     pass
+                    #self.is_port_in_use
                     #Prenastavit local port - zatim neni potreba
                 case 2:
                     if(sys.argv[2] == "a"):
                         pass
             
+    def is_port_in_use(self,port: int) -> bool:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            return s.connect_ex(('localhost', port)) == 0
+        
 
-    
+    #Creates connection to server
     def create_connection(self, D_HOST,D_PORT):
         try:
             self.D_HOST = D_HOST
@@ -49,6 +54,7 @@ class ConnectionManager():
         self.CONNECTED = True
         self.INET_ADDRESS = self.SOCKET.getpeername()
     
+    #Send message to server
     def send_message(self, message):
         if ((self.CONNECTED) != True):
             print("Can't send message. Connection isn't established")

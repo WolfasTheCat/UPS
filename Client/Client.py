@@ -11,3 +11,4 @@ class Client():
         else:
             print("This name isn't valid...")
             print("Valid names: 1-8 symbols where | is forbidden")
+            return
