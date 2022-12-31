@@ -1,3 +1,11 @@
+typedef enum { 
+	IN_LOBBY, 		//0
+	WANNA_PLAY,		//1
+	DISCONNECT,		//2
+	YOU_PLAYING,		//3
+	OPPONENT_PLAYING	//4
+} STATES;
+
 struct game
 {
     int game_id;
@@ -12,5 +20,13 @@ struct games_list
 {
     int games_count;
     game **games; 
-    /* data */
+};
+
+struct client
+{
+    int socket_ID;
+    STATES state;
+    pthread_t client_thread; //chybí knihovna
+    int connected;
+    int disconnected_time;
 };
