@@ -87,7 +87,7 @@ void play(clients **array_clients, wanna_play **wanna_plays, games **all_games, 
 void client_move(games **all_games, clients **array_clients, log_info **info, char *tok);
 void delete_connection(clients **array_clients, wanna_play **wanna_plays, fd_set *client_socks, int fd);
 void log_all(char *filename, log_info *info);
-void server_running(struct timeval start, struct timeval end, log_info **info);
+//void server_running(struct timeval start, struct timeval end, log_info **info);
 void disconnect(clients **array_clients, log_info **info, games *all_games, int fd, client **client);
 void delete(clients **array_clients, wanna_play **wanna_plays, fd_set *client_socks, games **all_games, log_info **info, int fd, int err_ID, client **cl);
 void game_info();

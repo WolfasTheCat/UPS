@@ -7,13 +7,15 @@ import tkinter
 
 class ConnectionManager():
     SOCKET = None
+    DATA = ""
     ADDRESS = "127.0.0.1"
     LOCALPORT = 10000
     INET_ADDRESS = None
     CONNECTED = False
     READER = None
-    D_HOST = None
-    D_PORT = None
+    WRITER = None
+    S_HOST = None
+    S_PORT = None
     
     
     #Builder for Connection Manager
@@ -37,13 +39,13 @@ class ConnectionManager():
         
 
     #Creates connection to server
-    def create_connection(self, D_HOST,D_PORT):
+    def create_connection(self, S_HOST,S_PORT):
         try:
-            self.D_HOST = D_HOST
-            self.D_PORT = D_PORT
+            self.S_HOST = S_HOST
+            self.S_PORT = S_PORT
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.SOCKET = s
-            s.connect((D_HOST,D_PORT))
+            s.connect((S_HOST,S_PORT))
             
         except:
             self.CONNECTED = False
@@ -54,11 +56,25 @@ class ConnectionManager():
         self.CONNECTED = True
         self.INET_ADDRESS = self.SOCKET.getpeername()
     
+    #Recieve message from server
+    def recieve_message(self):
+        DATA_C = self.SOCKET.recv(1024)
+        self.DATA = DATA_C.decode("utf-8")
+        
+    
     #Send message to server
     def send_message(self, message):
         if ((self.CONNECTED) != True):
             print("Can't send message. Connection isn't established")
         else:
             print("Sending message: " + message)
-            self.SOCKET.sendall(message)
-        pass
+            self.SOCKET.sendall(str.encode(message))
+
+    
+    def close_connection(self):
+        try:
+            self.SOCKET.close()
+            self.CONNECTED = False
+
+        except:
+            print("Couldn't disconnect")
