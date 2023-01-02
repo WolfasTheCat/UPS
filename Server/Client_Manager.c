@@ -34,7 +34,7 @@ void add_client_to_array(client_list **array_clients, char *name, int socket_ID)
 	(*array_clients) -> clients[((*array_clients) -> clients_count) - 1] = client;
 
 }
-
+//TODO Dodělat
 void remove_client_from_array(client_list **array_clients, waiting_for_game **waiting_players, int socket_ID){
     int count = (*array_clients)->clients_count;
     int socket;
