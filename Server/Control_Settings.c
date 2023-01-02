@@ -6,24 +6,24 @@
 #include <netinet/in.h>
 #include <stdlib.h>
 #include <sys/ioctl.h>
+#include "Main_Header.h"
 
-void process_move(game){
-
+void process_move(game Game){
     
 }
 
 
-void insert_into_array(char array[3][3], int row, int column, char symbol){
+void insert_into_array(char *array[3][3], int row, int column, char symbol){
     if ((row < 0 || row > 2) || (column < 0 || column > 2)){
         printf("Wrong move, invalid position");
         return -1;
     }
     
-    if(array[row][column] != " "){
+    if(*array[row][column] != " "){
         printf("Wrong move, piece is already there");
         return -2;
     }
-    array[row][column] = symbol;
+    *array[row][column] = symbol;
 }
 
 /**
