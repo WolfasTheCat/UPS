@@ -8,22 +8,23 @@
 #include <sys/ioctl.h>
 #include "Main_Header.h"
 
-void process_move(game Game){
+void process_move(game *game, client_list *clients){
+    int turn = game->turn;
     
 }
 
 
-void insert_into_array(char *array[3][3], int row, int column, char symbol){
+void insert_into_array(char **array, int row, int column, char symbol){
     if ((row < 0 || row > 2) || (column < 0 || column > 2)){
         printf("Wrong move, invalid position");
         return -1;
     }
     
-    if(*array[row][column] != " "){
+    if(*array[row * 3 + column] != ' '){
         printf("Wrong move, piece is already there");
         return -2;
     }
-    *array[row][column] = symbol;
+    *array[row * 3 + column] = symbol;
 }
 
 /**
@@ -32,44 +33,40 @@ void insert_into_array(char *array[3][3], int row, int column, char symbol){
  * @param array array with inserted values from players 
  * @return char N - nobody won, X - player with X, O - player with O
  */
-char check_state(char array[3][3]){
+char check_state(char *array){
     /*
     Horizontal check
     */
-    if ((array[1][1]==array[1][2]) && (array[1][2] == array[1][3])){ //
-        return array[1][1];
+    if ((array[0]==array[1]) && (array[1] == array[2]) && (array[0] != ' ')){
+        return array[0];
     }
-    if ((array[2][1]==array[2][2]) && (array[2][2] == array[2][3])){
-        return array[2][1];
+    if ((array[3]==array[4]) && (array[4] == array[5]) && (array[3] != ' ')){
+        return array[3];
     }
-    if ((array[3][1]==array[3][2]) && (array[3][2] == array[3][3])){
-        return array[3][1];
+    if ((array[6]==array[7]) && (array[7] == array[8]) && (array[6] != ' ')){
+        return array[6];
     }
     /*
     Vertical check
     */
-    if ((array[1][1]==array[2][1]) && (array[2][1] == array[3][1])){
-        return array[1][1];
+    if ((array[0]==array[3]) && (array[3] == array[6]) && (array[0] != ' ')){
+        return array[0];
     }
-    if ((array[1][2]==array[2][2]) && (array[2][2] == array[3][2])){
-        return array[1][2];
+    if ((array[1]==array[4]) && (array[4] == array[7]) && (array[1] != ' ')){
+        return array[1];
     }
-    if ((array[1][3]==array[2][3]) && (array[2][3] == array[3][3])){
-        return array[1][3];
+    if ((array[2]==array[5]) && (array[5] == array[8]) && (array[2] != ' ')){
+        return array[2];
     }
     /*
     Diagonal check
     */
-    if ((array[1][1]==array[2][2]) && (array[2][2] == array[3][3])){
-        return array[1][1];
+    if ((array[0]==array[4]) && (array[4] == array[8]) && (array[0] != ' ')){
+        return array[0];
     }
-    if ((array[1][3]==array[2][2]) && (array[2][2] == array[3][1]))
-    {
-        return array[1][3];
+    if ((array[2]==array[4]) && (array[4] == array[6]) && (array[2] != ' ')){
+        return array[2];
     }
-    
-    /*
-    No match found
-    */
+
     return "N";
 }

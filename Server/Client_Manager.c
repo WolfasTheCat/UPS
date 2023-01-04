@@ -34,8 +34,8 @@ void add_client_to_array(client_list **array_clients, char *name, int socket_ID)
 	(*array_clients) -> clients[((*array_clients) -> clients_count) - 1] = client;
 
 }
-//TODO Dodělat
-void remove_client_from_array(client_list **array_clients, waiting_for_game **waiting_players, int socket_ID){
+
+void remove_client_from_array(client_list **array_clients, waiting_players_for_game **waiting_players, int socket_ID){
     int count = (*array_clients)->clients_count;
     int socket;
     for (int i = 0; i < count; i++)
@@ -43,20 +43,30 @@ void remove_client_from_array(client_list **array_clients, waiting_for_game **wa
         socket = (*array_clients)->clients[i]->socket_ID;
         if (socket == socket_ID)
         {
-            /* code */
+            remove_from_waiting_for_game(waiting_players, socket_ID);
+			(*array_clients) -> clients_count--;			
+			if (i < (count - 1)) {
+				free((*array_clients) -> clients[i]);
+				(*array_clients) -> clients[i] = (*array_clients) -> clients[((*array_clients) -> clients_count)];								
+			}
+			(*array_clients) -> clients[((*array_clients) -> clients_count)] = NULL;			
+			(*array_clients) -> clients = realloc((*array_clients) -> clients, (*array_clients) -> clients_count * sizeof(client));
+
+			printf("Client left, actually logged clients: %d\n", (*array_clients) -> clients_count);	
+			return;
         }
         
     }
     
 }
 
-client *find_client_name(client_list *array_of_clients, char *name){
+client *find_client_by_name(client_list *array_of_clients, char *name){
     int count = array_of_clients->clients_count;
     char *temp_name;
     for (int i = 0; i < count; i++)
     {
         temp_name = array_of_clients->clients[i]->nickname;
-        if(strcmp(temp_name,name)==0){
+        if(strcmp(temp_name,name) == 0){
             return array_of_clients->clients[i];
         }
     }
@@ -91,5 +101,5 @@ void set_socket_ID(client **client, int socket){
 }
 
 void set_disconnected_time_status(client **client, int disconnected_time){
-(*client)->disconnected_time= disconnected_time;
+    (*client)->disconnected_time= disconnected_time;
 }

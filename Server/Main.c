@@ -9,7 +9,13 @@
 #include <pthread.h>
 #include <Header.h>
 #include <sys/epoll.h> // for epoll_create1(), epoll_ctl(), struct epoll_event
-
+#include <unistd.h>
+#include <sys/time.h>
+#include <sys/ioctl.h>
+#include <errno.h>
+#include <signal.h>
+#include <ctype.h>
+#include <arpa/inet.h>
 
 // telo vlakna co obsluhuje prichozi spojeni
 void *serve_request(void *arg){
@@ -97,3 +103,43 @@ int main (void){
 
 return 0;
 }
+
+void send_message(int client_socket, char *message, log_info **info, int logging) {	
+	printf("%d Writed message: %s\n", client_socket, message);
+	send(client_socket, message, strlen(message) * sizeof(char), 0);
+	if (logging == 1)
+	{
+		(*info) -> count_bytes += strlen(message) + 1;
+		(*info) -> count_messages++;
+	}
+	return;
+}
+
+void server_running(struct timeval start, struct timeval end, log_info **info) {
+	(*info) -> server_running_minutes = (end.tv_sec - start.tv_sec) / 60;
+	return;
+}
+
+int check_if_contains_delimiters(char *cbuf) {
+	char *e;
+	int index;
+	e = strchr(cbuf, '|');
+	if (e == NULL) return 0;
+	index = (int)(e - cbuf);
+	if (index > 20 || index <= 0) return 0;
+	else return 1;
+}
+
+int validate_input(char *cbuf) {
+	int i;
+	for (i = 0; i < strlen(cbuf); i++) {
+		if (!isascii(cbuf[i])) return 0; 
+		else {
+			if (i < (strlen(cbuf) - 1)) {
+				if ( (cbuf[i] == '|') && (cbuf[i+1] == 10) ) break;
+			}
+		}
+	}
+	return 1;
+}
+

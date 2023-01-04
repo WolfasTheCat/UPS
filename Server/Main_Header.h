@@ -14,7 +14,7 @@ typedef struct Game{
     char *first_player;
     char *second_player;
     char *now_playing;
-    char game_array[3][3];
+    char *game_array;
     int turn; //max 9 kol
         //0 pro prvního hráče, 1 pro druhého hráče
 }game;
@@ -42,7 +42,15 @@ typedef struct Waiting_players
 {
     int waiting_number;
     int *socket_ID_array;
-}waiting_for_game;
+}waiting_players_for_game;
 
+typedef struct Backlog
+{
+    int32_t bytes_count;
+    int32_t messages_count;
+    int connections_count;
+    int bad_connections_count;
+    int server_running_time; //running minutes count
+}backlog;
 
 #endif
