@@ -29,6 +29,7 @@ typedef struct Client{
     int socket_ID;
     STATES state;
     // pthread_t client_thread; //chybí knihovna
+    char symbol;
     int connected;
     int disconnected_time;
 }client;
@@ -53,4 +54,36 @@ typedef struct Backlog
     int server_running_time; //running minutes count
 }backlog;
 
+
+//Game.c
+
+create_array_of_games(games_list **games);
+add_to_game_array(games_list **games, char *player_1, char *player_2, char *now_playing);
+remove_game_from_array(client_list **clients, games_list **games, backlog **info, int game_ID);
+
+create_game(game **gm, char *player_1, char *player_2, char *now_playing);
+inicialize_game_field_array(game **gm);
+
+create_waiting_for_game(waiting_players_for_game **want_play);
+add_to_waiting_for_game(waiting_players_for_game **want_play, int socket_ID);
+remove_from_waiting_for_game(waiting_players_for_game **want_play, int socket_ID);
+
+game *find_game_by_name(games_list *all_games, char *name);
+int player_wanna_play(waiting_players_for_game *want_play, client *cl);
+
+//Client_manager.c
+void create_clients_array(client_list **array_clients);
+void create_client(client **client, char *name, int socket);
+void add_client_to_array(client_list **array_clients, char *name, int socket_ID);
+void remove_client_from_array(client_list **array_clients, waiting_players_for_game **waiting_players, int socket_ID);
+client *find_client_by_name(client_list *array_of_clients, char *name);
+client *find_client_by_socket(client_list *array_of_clients, int demanded_socket);
+void set_connected_status(client **client, int connected);
+void set_state_status(client **client, int state);
+void set_socket_ID(client **client, int socket);
+void set_disconnected_time_status(client **client, int disconnected_time);
+
+//Server.c
+
+void send_message(int client_socket, char *message, backlog **info, int logging);
 #endif

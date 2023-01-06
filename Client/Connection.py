@@ -21,7 +21,6 @@ class ConnectionManager():
     #Builder for Connection Manager
     def __init__(self) -> None: #Co to jako je? - Návratová hodnota
         
-        
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             option = len(sys.argv)
             match option:
@@ -70,7 +69,6 @@ class ConnectionManager():
             print("Sending message: " + message)
             self.SOCKET.sendall(str.encode(message))
 
-    
     def close_connection(self):
         try:
             self.SOCKET.close()

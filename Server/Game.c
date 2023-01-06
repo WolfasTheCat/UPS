@@ -107,9 +107,9 @@ remove_game_from_array(client_list **clients, games_list **games, backlog **info
 		char message_2[30];
 		sprintf(message_2, "update_game_ID;%d;\n", index);
 		client *cl_1 = get_client_by_name(*clients, (*games) -> games[index] -> first_player);
-		send_message(cl_1 -> socket_ID, message_1, info);
+		send_message(cl_1 -> socket_ID, message_1, info,1);
 		client *cl_2 = get_client_by_name(*clients, (*games) -> games[index] -> second_player);
-		send_message(cl_2 -> socket_ID, message_2, info);
+		send_message(cl_2 -> socket_ID, message_2, info,1);
 	}
 }
 
