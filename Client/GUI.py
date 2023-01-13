@@ -1,5 +1,7 @@
 import tkinter as tk
 from tkinter import * 
+from Messages import Messages
+
 
 #Dynamic - add self as parameter
 #Static - Name of class
@@ -105,6 +107,8 @@ class MenuView(tk.Frame):
         b_leave.pack(side="top", fill="both", expand=True)
 
 class GUI():
+    print("I'm in GUI")
+    print(Messages.CLIENT_END_APP)
     main_menu = tk.Tk()
     main_menu.geometry("750x450")
     view = MenuView(main_menu)
@@ -113,4 +117,4 @@ class GUI():
 
 
 if __name__=='__main__':
-    beggining = GUI()
+   beggining = GUI()

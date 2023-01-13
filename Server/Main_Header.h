@@ -2,9 +2,9 @@
 #define SERVER_MAIN_HEADER_H
 
 typedef enum { 
-	IN_LOBBY, 		//0
-	WANNA_PLAY,		//1
-	DISCONNECT,		//2
+	LOGGED, 		    //0
+	WAITING_FOR_GAME,	//1
+	DISCONNECT,		    //2
 	YOU_PLAYING,		//3
 	OPPONENT_PLAYING	//4
 } STATES;
@@ -28,8 +28,8 @@ typedef struct Client{
     char *nickname;
     int socket_ID;
     STATES state;
-    // pthread_t client_thread; //chybí knihovna
-    char symbol;
+    pthread_t client_thread; 
+    char symbol; //X or O
     int connected;
     int disconnected_time;
 }client;
@@ -84,6 +84,9 @@ void set_socket_ID(client **client, int socket);
 void set_disconnected_time_status(client **client, int disconnected_time);
 
 //Server.c
-
 void send_message(int client_socket, char *message, backlog **info, int logging);
+
+//Control_Settings.c
+int process_move(games_list **all_games, client_list *clients, backlog **info, int game_ID, int row, int column);
+
 #endif

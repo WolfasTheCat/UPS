@@ -2,7 +2,9 @@ from argparse import OPTIONAL
 from mailbox import Message
 import socket
 import sys
-import tkinter
+from tkinter  import *
+from tkinter import messagebox
+from Messages import * 
 
 
 class ConnectionManager():
@@ -16,7 +18,6 @@ class ConnectionManager():
     WRITER = None
     S_HOST = None
     S_PORT = None
-    
     
     #Builder for Connection Manager
     def __init__(self) -> None: #Co to jako je? - Návratová hodnota
@@ -49,7 +50,7 @@ class ConnectionManager():
         except:
             self.CONNECTED = False
             print("Couldn't connect")
-            tkinter.messagebox.showerror(title=None, message="Problem with connection")
+            messagebox.showerror(title=None, message="Problem with connection")
             return
         
         self.CONNECTED = True
@@ -76,3 +77,20 @@ class ConnectionManager():
 
         except:
             print("Couldn't disconnect")
+    
+    def login(self, nickname):
+        if (len(nickname) < 1):
+            messagebox.showerror(title=None, message="Name is too short")
+            print("Name is too short")
+            return
+        if ("|" in nickname):
+            messagebox.showerror(title=None, message="Name contains forbiden characters (|)")
+            print("Name contains forbiden characters (|)")
+            return
+        if (len(nickname) > 10):
+            messagebox.showerror(title=None, message="Your name is too long (only 10 characters are allowed)")
+            print("Your name is too long (only 10 characters are allowed)")
+            return
+        
+        self.send_message(Messages.CLIENT_LOGIN.value)
+        

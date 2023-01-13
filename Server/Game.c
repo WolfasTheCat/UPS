@@ -12,7 +12,7 @@
  * 
  * @param games array of all games on server
  */
-create_array_of_games(games_list **games){
+ create_array_of_games(games_list **games){
     int max_games = 10;
     (*games) = calloc(1,sizeof(games_list));
     (*games)->games_count = 0;
@@ -27,7 +27,7 @@ create_array_of_games(games_list **games){
  * @param player_2 second player
  * @param now_playing who will be playing
  */
-create_game(game **gm, char *player_1, char *player_2, char *now_playing){
+ create_game(game **gm, char *player_1, char *player_2, char *now_playing){
     (*gm) = malloc(sizeof(game));
     (*gm)->first_player = player_1;
     (*gm)->second_player = player_2;
@@ -39,7 +39,7 @@ create_game(game **gm, char *player_1, char *player_2, char *now_playing){
  * 
  * @param gm game object
  */
-inicialize_game_field_array(game **gm){
+ inicialize_game_field_array(game **gm){
     (*gm)->game_array = malloc(9*sizeof(char));
     int lenght = 9;
 
@@ -56,9 +56,9 @@ inicialize_game_field_array(game **gm){
  * @param games array of all games
  * @param player_1 first player
  * @param player_2  second player
- * @param now_playing who will be playing
+ * @param now_void playing who will be playing
  */
-add_to_game_array(games_list **games, char *player_1, char *player_2, char *now_playing){
+ add_to_game_array(games_list **games, char *player_1, char *player_2, char *now_playing){
     (*games)->games_count++;
     printf("Games count after adding one: %d\n",(*games)->games_count);
     (*games)->games = realloc((*games)->games,(*games)->games_count * sizeof(game));
@@ -77,7 +77,7 @@ add_to_game_array(games_list **games, char *player_1, char *player_2, char *now_
  * @param info  server log
  * @param game_ID ID of game
  */
-remove_game_from_array(client_list **clients, games_list **games, backlog **info, int game_ID){
+ remove_game_from_array(client_list **clients, games_list **games, backlog **info, int game_ID){
     int count = (*games)->games_count;
     int index;
     int update_game_ID = 0;
@@ -118,7 +118,7 @@ remove_game_from_array(client_list **clients, games_list **games, backlog **info
  * 
  * @param want_play  waiting for game array
  */
-create_waiting_for_game(waiting_players_for_game **want_play){
+ create_waiting_for_game(waiting_players_for_game **want_play){
     (*want_play) = calloc(1, sizeof(waiting_players_for_game));
     (*want_play)->waiting_number = 0;
     (*want_play)->socket_ID_array = calloc(1, sizeof(int));
@@ -130,7 +130,7 @@ create_waiting_for_game(waiting_players_for_game **want_play){
  * @param want_play waiting for game array
  * @param socket_ID player who wants to play
  */
-add_to_waiting_for_game(waiting_players_for_game **want_play, int socket_ID){
+ add_to_waiting_for_game(waiting_players_for_game **want_play, int socket_ID){
     (*want_play)->waiting_number++;
     printf("Socked with ID %d wants to play a game\n",socket_ID);
     (*want_play)->socket_ID_array = realloc((*want_play)->socket_ID_array, (*want_play)->waiting_number * sizeof(int));
@@ -144,7 +144,7 @@ add_to_waiting_for_game(waiting_players_for_game **want_play, int socket_ID){
  * @param want_play 
  * @param socket_ID 
  */
-remove_from_waiting_for_game(waiting_players_for_game **want_play, int socket_ID){
+ remove_from_waiting_for_game(waiting_players_for_game **want_play, int socket_ID){
 	int socket;
 	int count = (*want_play) -> waiting_number;
 	for(int i = 0; i < count; i++) {

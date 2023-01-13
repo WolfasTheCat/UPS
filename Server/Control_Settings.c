@@ -8,7 +8,7 @@
 #include <sys/ioctl.h>
 #include "Main_Header.h"
 
-void process_move(games_list **all_games, client_list *clients, backlog **info, int game_ID, int row, int column){
+int process_move(games_list **all_games, client_list *clients, backlog **info, int game_ID, int row, int column){
     game *current_game = (*all_games)->games[game_ID];
     client *client_1 = find_client_by_name(clients, current_game->now_playing);
     client *client_2;
@@ -25,12 +25,12 @@ void process_move(games_list **all_games, client_list *clients, backlog **info, 
 
     if(move_status == -1){
         send_message(client_1->socket_ID,"wrong_move|-1|\n",info,1);
-        return;
+        return -1;
     }
     else if (move_status == -2)
     {
         send_message(client_1->socket_ID,"wrong_move|-2|\n",info,1);
-        return;
+        return -2;
     }
     else{
 
@@ -43,7 +43,7 @@ void process_move(games_list **all_games, client_list *clients, backlog **info, 
     current_game->turn == current_game->turn++;
 
     char who_won = check_state(current_game->game_array);
-    if ((who_won == 'X') && (client_1->symbol == 'X')){  //! Nejspíš jsou blbě klienti, protože nahoře se přehazují
+    if ((who_won == 'X') && (client_1->symbol == 'X')){  //! Nejspíš jsou blbě klienti, protože nahoře se přehazují - SNAD VYŘEŠENO
         game_end(all_games, game_ID, 1, clients, client_1->socket_ID, client_2->socket_ID, info);
     }
     if ((who_won == 'O') && (client_1->symbol == 'O'))
@@ -69,6 +69,8 @@ void process_move(games_list **all_games, client_list *clients, backlog **info, 
     send_message(client_2->socket_ID, "play_next_player|\n", info,1);
 
     current_game->now_playing = client_2->nickname;
+    
+    return 0;
 }
 
 int insert_into_array(char **array, int row, int column, char symbol){

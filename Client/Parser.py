@@ -8,7 +8,7 @@ class Parser(): #TODO Parser of responses from server
         pass
     
     def parse_message(self, message):
-        self.MESSAGE = str.split(message)
+        self.MESSAGE = message.split("|")
         
         if self.MESSAGE[0] is "OK":
             pass

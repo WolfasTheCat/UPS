@@ -1,8 +1,7 @@
-from enum import StrEnum
-from strenum import StrEnum
+from enum import Enum
 
 
-class Messages(StrEnum):
+class Messages(Enum):
     CLIENT_LOGIN = "login"
     CLINET_WANT_TO_PLAY = "play"
     CLIENT_MOVE = "move"
