@@ -55,9 +55,7 @@ void remove_client_from_array(client_list **array_clients, waiting_players_for_g
 			printf("Client left, actually logged clients: %d\n", (*array_clients) -> clients_count);	
 			return;
         }
-        
     }
-    
 }
 
 client *find_client_by_name(client_list *array_of_clients, char *name){
@@ -101,5 +99,9 @@ void set_socket_ID(client **client, int socket){
 }
 
 void set_disconnected_time_status(client **client, int disconnected_time){
-    (*client)->disconnected_time= disconnected_time;
+    (*client)->disconnected_time = disconnected_time;
+}
+
+void set_symbol_status(client **client, char letter){
+    (*client)->symbol = letter;
 }

@@ -105,16 +105,18 @@ class MenuView(tk.Frame):
         b_multi.pack(side="top", fill="both", expand=True)
         b_leave =   Button(root, text= "Leave", font=("Helvetica",20), height=3,width=6, bg=("white"), command=lambda: self.b_exit_clicked(b_leave))
         b_leave.pack(side="top", fill="both", expand=True)
-
+        
+"""
 class GUI():
     print("I'm in GUI")
-    print(Messages.CLIENT_END_APP)
+    print(Messages.CLIENT_END_APP.value)
     main_menu = tk.Tk()
     main_menu.geometry("750x450")
     view = MenuView(main_menu)
     view.pack(side="top", fill="both", expand=True)
     main_menu.mainloop()
 
-
 if __name__=='__main__':
    beggining = GUI()
+
+"""

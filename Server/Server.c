@@ -187,9 +187,12 @@ int main (void){
 
 				else if(strcmp(read_buffer,"is_connected") == 0){
 
+
 				}
 				else if(strcmp(read_buffer,"end_app") == 0){
-					
+					if(current_client != NULL){
+						
+					}
 				}
 
 				printf("%zd bytes read.\n", bytes_read);
@@ -237,6 +240,7 @@ void server_running(struct timeval start, struct timeval end, backlog **info) {
 	return;
 }
 
+/*****************************************************/ //Nepoužil jsem - zatím
 int check_if_contains_delimiters(char *cbuf) {
 	char *e;
 	int index;
@@ -259,6 +263,7 @@ int validate_input(char *cbuf) {
 	}
 	return 1;
 }
+/******************************************/
 
 int name_exists (client_list *array_clients, char *name) {
 	int i;
@@ -273,6 +278,11 @@ int name_exists (client_list *array_clients, char *name) {
 void login(client_list **array_clients, games_list *all_games, backlog **info, char *tok, int max_players, int fd, client **client) {
 	tok = strtok(NULL, "|");
 	char *name = tok;
+
+	if(check_if_name_is_valid(array_clients, name, fd, info) != 0){
+		return;
+	}
+
 	if (name_exists((*array_clients), name) == 0) {								
 		if (((*array_clients) -> clients_count) < (max_players)) {			
 			if ((*client) == NULL) {
@@ -296,7 +306,7 @@ void login(client_list **array_clients, games_list *all_games, backlog **info, c
 	else {
 		(*client) = get_client_by_name(*array_clients, name);
 		if ((*client) -> state == 2) {
-			reconnect(array_clients, all_games, info, name, fd, tok, max_players, client);									
+			reconnect(array_clients, all_games, info, name, fd, client);									
 		}
 		else {
 			char *message = "login_failed|3|\n";
@@ -305,6 +315,7 @@ void login(client_list **array_clients, games_list *all_games, backlog **info, c
 	} 
 	return;
 }
+
 /**
  * @brief Make move in the client's game
  * 
@@ -327,14 +338,14 @@ void client_move(client_list **array_of_clients, games_list **all_games, char *m
 	int game_ID = atoi(array[0]);
 	int row = atoi(array[1]);
 	int column = atoi(array[2]);
-	printf("CLIENT MOVE: GAME ID: %d, ROW= %d, COLUMN = %d",game_ID,row,column);
+	printf("CLIENT MOVE: GAME ID: %d, ROW= %d, COLUMN = %d \n",game_ID,row,column);
 
 	int status = process_move(all_games, array_of_clients, log, game_ID, row, column);
 	if (status == 0){
-		printf("Move proccesed sucessfully");
+		printf("Move proccesed sucessfully \n");
 	}
 	else{
-		printf("Invalid move. Move denied by server");
+		printf("Invalid move. Move denied by server \n");
 	}
 	return;
 }
@@ -345,47 +356,226 @@ void want_to_play(client_list **array_of_clients, waiting_players_for_game **wai
 
 	add_to_waiting_for_game(waiting_clients,fd);
 	(*current_client)->state = 1;
-
+	
+	//More than 1 player is waiting for game
 	if((*waiting_clients)->waiting_number >= 2){
-		
+
+		char message1[100];
+		char message2[100];
 		int current_client_socket = fd;
         int opponent_client_socket;
+
         do {
             opponent_client_socket = (*waiting_clients) -> socket_ID_array[rand() % ((*waiting_clients) -> waiting_number)];
         }
         while(opponent_client_socket == current_client_socket);
 
+		//Remove clients from waiting array
 		remove_from_waiting_for_game(waiting_clients,current_client_socket);
 		remove_from_waiting_for_game(waiting_clients,opponent_client_socket);
 
+		//Find client's opponent by socket
 		opponent = find_client_by_socket(*array_of_clients,opponent_client_socket);
 
+		//Set current client to "your turn" and opponent to "not your turn"
 		set_state_status(current_client,3);
 		set_state_status(&opponent,4);
 
+		//Set current client symbot to X (first player) and opponent to O (second player)
+		set_symbol_status(current_client,'X');
+		set_symbol_status(&opponent,'O');
 
+
+		sprintf(message1, "starting_new_game|%d|%c", (*all_games)->games_count, (*current_client)->symbol);
+		sprintf(message2, "starting_new_game|%d|%c", (*all_games)->games_count, opponent->symbol);
+
+		//Add game with clients to game array
+		add_to_game_array(all_games,(*current_client)->nickname,(opponent)->nickname,(*current_client)->nickname);
+
+		//Send message to clients that game have started
+		send_message((*current_client)->socket_ID, message1, server_log, 1);
+		send_message(opponent->socket_ID, message2, server_log, 1);
+	}
+	return;
+}
+
+//Client reconnected back to the game
+void reconnect(client_list **array_clients, games_list *all_games, backlog **info, char *name, int fd, client **cl){
+	(*cl)->connected = 1;
+	(*cl)->socket_ID = fd;
+
+
+	char game_board[1024];
+	game *player_game = find_game_by_name(all_games,name);
+
+	char who_is_playing_now[10];
+
+	if (strcmp(player_game -> now_playing, name) == 0) { 
+		(*cl) -> state = 3;
+		strcat(who_is_playing_now, "you");  
+	}
+	else {
+		(*cl) -> state = 4;
+		strcat(who_is_playing_now, "opponent");
+	}
+	sprintf(game_board, "board|%s|%s|%d|%d|%s|", name, player_game -> game_id, player_game->turn, who_is_playing_now);
+
+	for (int i = 0; i < 9; i++){
+		if(player_game->game_array[i] != ' '){
+
+			char x[3];
+			char symbol[3];
+
+			sprintf(x, "%d|",i);
+			sprintf(symbol, "%c|",(*cl)->symbol);
+
+			strcat(game_board,x);
+			strcat(game_board,symbol);
+		}
+		
+	}
+	strcat(game_board, "\n");
+	
+	send_message(fd,game_board,info,1);
+
+
+	if (strcmp(player_game -> first_player, name) == 0) {
+        client *opponent = find_client_by_name(*array_clients, player_game -> second_player);
+
+        // check if opponent is connected
+		if (opponent -> state == 2) {
+			 // send message, that opponent is disconnected
+			send_message(fd, "opponent_disconnected|\n", info, 1);
+		}
+		else {
+			 // send message, that his opponent has reconnected
+			send_message(opponent -> socket_ID, "opponent_is_back|\n", info, 1);
+		}
+	}
+	else {
+		client *opponent = find_client_by_name(*array_clients, player_game -> first_player);
+
+		// check if opponent is connected
+		if (opponent -> state == 2) {
+			// send message, that opponent is disconnected
+			send_message(fd, "opponent_disconnected|\n", info, 1);
+		}
+		else {
+			// send message, that his opponent has reconnected
+			send_message(opponent -> socket_ID, "opponent_is_back|\n", info, 1);
+		}
+	}
+	return;
+}
+
+//Client lost connection
+void disconnect(client_list **array_clients, backlog **server_log, games_list *all_games, int fd, client **client){	
+	if (client == NULL) return;
+	if ((*client) -> state == 2) return;
+
+	(*client) -> state = 2;
+
+	char *opponent;
+	game *game = find_game_by_name(all_games, (*client) -> nickname);
+
+	if (game == NULL) return;
+
+	if (strcmp(game -> first_player, (*client) -> nickname) == 0) {
+		opponent = game -> second_player;
+	} 
+	else {
+		opponent = game -> first_player;
 	}
 	
-}
-//Klient se pripojil zpet do hry
-void reconnect(){
-
-}
-//Klient ztratil spojeni
-void disconnect(){
-
-}
-//Odebere klienta ze serveru
-void remove_client_from_server(){
-
-}
-//odpoji klienta od serveru
-void end_connection_for_client(){
-
+	printf("Opponent with socket ID %d disconnected\n", fd);
+	send_message(find_client_by_name(*array_clients, opponent) -> socket_ID, "opponent_disconnected|\n", server_log, 1);
+	return;
 }
 
-int check_if_name_is_valid(client_list **array_clients, char *name){
+//Remove client from server //!Not sure
+void remove_client_from_server(client_list **array_clients, waiting_players_for_game **wanna_plays, games_list **all_games, backlog **info, int fd, int err_ID, client **cl){
+	if ((*cl) == NULL) {
+		return;
+	}
+	printf("name: %s, id: %d\n", (*cl) -> nickname, (*cl) -> socket_ID);	
+	game *gm = find_game_by_name(*all_games, (*cl) -> nickname);	
+	char message[30];
 
+	switch (err_ID) {
+		case 0:
+			printf("Client with socket %d timeout\n", fd);
+			break;
+		case 1:
+			printf("Client with socket %d left\n", fd);
+			break;
+	}
+	if (gm == NULL) {
+		printf("game null\n");
+		end_connection_for_client(array_clients, wanna_plays, fd);
+		return;
+	}
+	printf("Game id %d\n", gm -> game_id);
+	char *second_client_name;
+
+	if (strcmp(gm -> first_player, (*cl) -> nickname) == 0) {
+		second_client_name = gm -> second_player;
+	} 
+	else {
+		second_client_name = gm -> first_player;
+	}
+	client *sec_cl = get_client_by_name(*array_clients, second_client_name);
+	set_state_status(&sec_cl, 0);
+	switch (err_ID) {
+		case 0:
+			sprintf(message, "end_game_timeout|11|\n");
+			printf("Game with id %d removed due to client timeout\n", gm -> game_id);
+			break;
+		case 1:
+			sprintf(message, "end_game_left|10|\n");
+			printf("Game with id %d removed due to client left\n", gm -> game_id);
+			break;
+	}	
+	send_message(sec_cl -> socket_ID, message, info,1);
+	remove_game_from_array(array_clients, all_games, info, gm -> game_id);
+	end_connection_for_client(array_clients, wanna_plays, fd);
+
+	return;
+}
+
+//Close client connection to server and remove it from server structure
+void end_connection_for_client(client_list **array_clients, waiting_players_for_game **all_ready, int fd){
+	// closing socket - also it remove it from epoll 
+    close(fd);
+
+    // removing client from main structures of server
+	remove_client_from_array(array_clients,all_ready,fd);
+	return;
+}
+
+//Check if name is valid for server login
+int check_if_name_is_valid(client_list **array_clients, char *name, int fd, backlog **server_log){
+	if(strlen(name)>10){
+		char message[150];
+		printf("Name is too long \n");
+		sprintf(&message,"login_failed|-1");
+		send_message(fd,&message,server_log,1);
+		return -1;
+	}
+	else if(strlen(name)<1){
+		char message[150];
+		printf("No name is given \n");
+		sprintf(&message,"login_failed|-2");
+		send_message(fd,&message,server_log,1);
+		return -2;
+	}
+	else if(strchr(name,'|') != NULL){
+		char message[150];
+		printf("Name cointains blacklisted characters ('|') \n");
+		sprintf(&message,"login_failed|-3");
+		send_message(fd,&message,server_log,1);
+		return -3;
+	}
+	return 0;
 }
 
 void *check_connectivity_by_ping(){

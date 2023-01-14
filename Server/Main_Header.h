@@ -82,6 +82,7 @@ void set_connected_status(client **client, int connected);
 void set_state_status(client **client, int state);
 void set_socket_ID(client **client, int socket);
 void set_disconnected_time_status(client **client, int disconnected_time);
+void set_symbol_status(client **client, char letter);
 
 //Server.c
 void send_message(int client_socket, char *message, backlog **info, int logging);

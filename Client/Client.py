@@ -1,9 +1,9 @@
 class Client():
     NAME = ""
-    SYMBOL = ''
+    SYMBOL = '' 
     STATE = -1
     ISCONNECTED = False
-    CONNECTED = True
+    #CONNECTED = True
     
     
     def __init__(self,name) -> None: #TODO poslat jmeno serveru a predelat jmena na serveru - ZEPTAT

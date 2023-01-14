@@ -51,7 +51,7 @@ class ConnectionManager():
             self.CONNECTED = False
             print("Couldn't connect")
             messagebox.showerror(title=None, message="Problem with connection")
-            return
+            exit
         
         self.CONNECTED = True
         self.INET_ADDRESS = self.SOCKET.getpeername()
@@ -92,5 +92,5 @@ class ConnectionManager():
             print("Your name is too long (only 10 characters are allowed)")
             return
         
-        self.send_message(Messages.CLIENT_LOGIN.value)
+        self.send_message(Messages.CLIENT_LOGIN.value + "|"+nickname+"|\n")
         
