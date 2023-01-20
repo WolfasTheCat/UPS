@@ -7,7 +7,9 @@ from GUI import *
 
 class Main(): #TODO Main method
      print("jsem tu")
-     manager = ConnectionManager()
+     connection_manager = ConnectionManager()
+     action_manager = ActionManager()
+     
      #manager.create_connection("127.0.0.1",10000)
      
      GUI = tk.Tk()
